@@ -1,16 +1,15 @@
-# Manual PIA VPN Connections
+# Manual PIA Wireguard VPN Connections. RaspiOS
 
-### This is a FreeBSD/FreeNAS fork of the original Linux scripts at https://github.com/pia-foss/manual-connections.  
+### This is a fork of the original Linux scripts at https://github.com/glorious1/manual-connections  
 Fork Notes:
-1. The scripts are set up to work via either OpenVPN or Wireguard.  Comment out the one you don't use in `run_setup.sh`. 
-2. If you clone this repository, I suggest you change the directory name to `/pia` because that's the directory name I used. 
-3. `run_setup.sh` is the script you call to start the whole process.  It calls the following script and so on.  If you're using port forwarding, `port_forwarding.sh` and `refresh_pia_port.sh` are the last scripts called.  The port needs to be refreshed about every 15 minutes.  I separated out the code in the latter script so it could be called by a cron job inside the jail.  That way the script doesn't need to be left running in a tmux session or something.  Cron should look like `*/15 * * * * /pia/refresh_pia_port.sh > /pia-info/refresh.log 2>&1` and run as `root`.  The output will be in `/pia-info/refresh.log`.
-4. I changed `run_setup.sh` from a question-answer format to simply a settings/config file for the process.  Just edit to your desired settings.  PIA username and password are handled as an external file `/pia-info/pia_creds.txt` in the old style: first line user name, second line password.  If you don't want such a file sitting on your server, you can get the question-answer code from the Linux script and change that part.
-5. In `port_forwarding.sh`, I added a transmission command to send the port number to transmission-rpc.  For this to work, transmission should be running before you start the scripts.  (OpenVPN should NOT be running, as the scripts configure and start it. `service openvpn stop`)
-6. If you have trouble, carefully read the output to see where it failed.  I added a printed header to each script when it starts so you can see where you are (not `openvpn_up.sh` because it is run by OpenVPN).  Should OpenVPN fail to start, I added a command to print `/pia-info/debug_info` to screen so you can see what was going on with OpenVPN.  The scripts also store a bunch of other stuff in `/pia-info`. 
-7. At least for OpenVPN, the network interface used is tun0.  If you start run_setup.sh interactively, a later script will check for tun0 and offer to kill the openvpn process that started it.  Otherwise, it will create another tun# and report everything is great, but you won't actually have your open port in transmission.
-8. I start `run_setup.sh` with an @reboot cron job inside the jail so it starts when the jail starts: `@reboot cd /pia && /pia/run_setup.sh > /pia-info/startup.log 2>&1`.  This puts all the output in a log in `/pia-info`.  If the jail just started, there shouldn't be any openvpn process or tun0, so that shouldn't be a problem.
-
+1. Pia Wireguard namual conecction on RaspiOS (Tested on Raspberry Pi 4 & Debian 11 64bits lite)
+2. Full configuration on config/pia_config.txt
+3. Install on /opt/pia
+4. Only Wireguard protocol are soported
+4. New option in config/pia_config.txt in order to ignore geolocalizated Regions
+5. I recomend start `run_setup.sh` with an @reboot root cron job: `@reboot cd /opt/pia && sudo /opt/pia/run_setup.sh > /var/log/pia_startup.log 2>&1`
+6. I recomend Refresh Port every 15 minutes, in other case Pia usualy close de port. Include in root crontab job: `*/15 * * * * * cd /opt/pia && sudo /opt/pia/refresh_pia_port.sh > /var/log/pia_refresh_port.log 2>&1`
+7. Download: git clone https://github.com/joselin666/ Pia-wireguard-manual-connections-for-RaspiOS.git /opt/pia
 End of Fork Notes
 
 This repository contains documentation on how to create native WireGuard and OpenVPN connections to Private Internet Access' (PIA) __NextGen network__, and also on how to enable Port Forwarding in case you require this feature. You will find a lot of information below. However if you prefer quick test, here is the __TL/DR__:
