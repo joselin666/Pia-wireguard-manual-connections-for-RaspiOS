@@ -9,7 +9,7 @@ Fork Notes:
 4. New option in config/pia_config.txt in order to ignore geolocalizated Regions
 5. I recomend start `run_setup.sh` with an @reboot root cron job: `@reboot cd /opt/pia && sudo /opt/pia/run_setup.sh > /var/log/pia_startup.log 2>&1`
 6. I recomend Refresh Port every 15 minutes, in other case Pia usualy close de port. Include in root crontab job: `*/15 * * * * * cd /opt/pia && sudo /opt/pia/refresh_pia_port.sh > /var/log/pia_refresh_port.log 2>&1`
-7. Download: git clone https://github.com/joselin666/ Pia-wireguard-manual-connections-for-RaspiOS.git /opt/pia
+7. Download: git clone https://github.com/joselin666/Pia-wireguard-manual-connections-for-RaspiOS.git /opt/pia
 End of Fork Notes
 
 This repository contains documentation on how to create native WireGuard and OpenVPN connections to Private Internet Access' (PIA) __NextGen network__, and also on how to enable Port Forwarding in case you require this feature. You will find a lot of information below. However if you prefer quick test, here is the __TL/DR__:
