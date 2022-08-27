@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 
 # Copyright (C) 2020 Private Internet Access, Inc.
 #
@@ -21,6 +21,8 @@
 # SOFTWARE.
 
 # Only allow script to run as root
+DIRBASE="/opt/pia"
+cd $DIRBASE
 
 now="$(date)"
 
@@ -43,26 +45,24 @@ fi
 # just so they don't show on github
 # Username on first line, password on second
 declare -a creds # an array
-readarray -t creds < /pia-info/pia_creds.txt
-PIA_USER="${creds[0]}"
-PIA_PASS="${creds[1]}"
+readarray -t creds < config/pia_config.txt
+PIA_USER="${creds[1]}"
+PIA_PASS="${creds[2]}"
 echo "Retrieved credentials"
 export PIA_USER
 export PIA_PASS
 
-protocol="udp"
-encryption="strong"
-
-# To use openvn remove # from start of that line and add it to start of "PIA_AUTOCONNECT=wireguard"
-#PIA_AUTOCONNECT="openvpn_${protocol}_${encryption}"
 PIA_AUTOCONNECT=wireguard
 export PIA_AUTOCONNECT
 
-PIA_DNS="false"
+PIA_GEO="${creds[3]}"
+export PIA_GEO
+PIA_DNS="${creds[4]}"
 export PIA_DNS
-PIA_PF="true"
+PIA_PF="${creds[5]}"
 export PIA_PF
-MAX_LATENCY=0.1
+
+MAX_LATENCY="${creds[6]}"
 export MAX_LATENCY
 
 ./get_region_and_token.sh

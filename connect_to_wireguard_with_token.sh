@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # Copyright (C) 2020 Private Internet Access, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,7 +20,15 @@
 # SOFTWARE.
 
 # This script has not been completely edited to make it 
-# BSD-compatible because I don't use wireguard.  
+# BSD-compatible because I don't use wireguard.
+DIRBASE="/opt/pia"
+cd $DIRBASE  
+
+echo "
+###########################################
+    connect_to_wireguard_with_token.sh
+###########################################
+"
 
 # This function allows you to check if the required tools have been installed.
 function check_tool() {
@@ -63,11 +71,6 @@ if [[ ! $WG_SERVER_IP || ! $WG_HOSTNAME || ! $PIA_TOKEN ]]; then
   echo You can also specify optional env vars:
   echo "PIA_PF                - enable port forwarding"
   echo "PAYLOAD_AND_SIGNATURE - In case you already have a port."
-  echo
-  echo An easy solution is to just run get_region_and_token.sh
-  echo as it will guide you through getting the best server and
-  echo also a token. Detailed information can be found here:
-  echo https://github.com/pia-foss/manual-connections
   exit 1
 fi
 
@@ -113,8 +116,6 @@ echo
 # This uses a PersistentKeepalive of 25 seconds to keep the NAT active
 # on firewalls. You can remove that line if your network does not
 # require it.
-echo -n "Trying to write /etc/wireguard/pia.conf... "
-mkdir -p /etc/wireguard
 if [ "$PIA_DNS" == true ]; then
   dnsServer="$(echo "$wireguard_json" | jq -r '.dns_servers[0]')"
   echo Trying to set up DNS to $dnsServer. In case you do not have resolvconf,
@@ -122,6 +123,8 @@ if [ "$PIA_DNS" == true ]; then
   echo start this script without PIA_DNS.
   dnsSettingForVPN="DNS = $dnsServer"
 fi
+echo -n "Trying to write /etc/wireguard/pia.conf..."
+mkdir -p /etc/wireguard
 echo "
 [Interface]
 Address = $(echo "$wireguard_json" | jq -r '.peer_ip')
@@ -164,7 +167,7 @@ echo -n "
 #initialize and after that we will try to enable PF by running the following
 #command:
 #$ PIA_TOKEN=$PIA_TOKEN \\
-#  PF_GATEWAY=\"$(echo "$wireguard_json" | jq -r '.server_vip')\" \\
+#  PF_GATEWAY=\"$(echo "$wireguard_json" | jq -r '.server_ip')\" \\
 #  PF_HOSTNAME=\"$WG_HOSTNAME\" \\
 #  ./port_forwarding.sh
   
@@ -177,7 +180,7 @@ echo
 echo
 
 PIA_TOKEN=$PIA_TOKEN \
-  PF_GATEWAY="$(echo "$wireguard_json" | jq -r '.server_vip')" \
+  PF_GATEWAY="$(echo "$wireguard_json" | jq -r '.server_ip')" \
 export PF_GATEWAY
   PF_HOSTNAME="$WG_HOSTNAME" \
 export PF_HOSTNAME

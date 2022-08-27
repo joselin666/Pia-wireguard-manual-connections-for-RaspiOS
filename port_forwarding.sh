@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # Copyright (C) 2020 Private Internet Access, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,6 +18,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+DIRBASE=`dirname $0`
+cd $DIRBASE
 
 echo "
 #######################################
@@ -49,11 +51,6 @@ if [[ ! $PF_GATEWAY || ! $PIA_TOKEN || ! $PF_HOSTNAME ]]; then
   echo PF_GATEWAY  - the IP of your gateway
   echo PF_HOSTNAME - name of the host used for SSL/TLS certificate verification
   echo PIA_TOKEN   - the token you use to connect to the vpn services
-  echo
-  echo An easy solution is to just run get_region_and_token.sh
-  echo as it will guide you through getting the best server and
-  echo also a token. Detailed information can be found here:
-  echo https://github.com/pia-foss/manual-connections
 exit 1
 fi
 
@@ -119,8 +116,7 @@ echo "The signature is OK.
 "
 
 # Save variables to files so refresh script can get them
-pf_filepath=/pia-info/pf
-mkdir $pf_filepath
+pf_filepath=$DIRBASE/pf
 echo "$PF_HOSTNAME" > $pf_filepath/PF_HOSTNAME
 echo "$PF_GATEWAY" > $pf_filepath/PF_GATEWAY
 echo "$payload" > $pf_filepath/payload
@@ -133,4 +129,3 @@ echo "$expires_at" > $pf_filepath/expires_at
 # forwarding.  However it will still expire in 2 months.
 
 ./refresh_pia_port.sh
-

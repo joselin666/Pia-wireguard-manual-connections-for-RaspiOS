@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # Copyright (C) 2020 Private Internet Access, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,6 +18,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+DIRBASE="/opt/pia"
+cd $DIRBASE
 
 echo "
 ################################
@@ -44,8 +46,8 @@ check_tool jq jq
 # All servers that respond slower than this will be ignored.
 # You can inject this with the environment variable MAX_LATENCY.
 # The default value is 50 milliseconds.
-MAX_LATENCY=${MAX_LATENCY:-0.05}
-export MAX_LATENCY
+#MAX_LATENCY=${MAX_LATENCY:-0.05}
+#export MAX_LATENCY
 
 serverlist_url='https://serverlist.piaservers.net/vpninfo/servers/v4'
 
@@ -84,19 +86,29 @@ echo "OK!"
 
 # Test one server from each region to get the closest region.
 # If port forwarding is enabled, filter out regions that don't support it.
-if [[ $PIA_PF == "true" ]]; then
-  echo Port Forwarding is enabled, so regions that do not support
-  echo port forwarding will get filtered out.
-  summarized_region_data="$( echo $all_region_data |
-    jq -r '.regions[] | select(.port_forward==true) |
-    .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+# If ignore Geo Regions is enabled, filter out Geo regions.
+echo Port Forwarding=$PIA_PF
+echo Ignore Geo Regions=$PIA_GEO
+
+if [ "$PIA_PF" == "true" ]
+then
+  if [ "$PIA_GEO" == "true" ]
+  then
+    summarized_region_data="$( echo "$all_region_data" | jq -r '.regions[] | select(.port_forward==true) | select(.geo==false) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+  else
+    summarized_region_data="$( echo "$all_region_data" | jq -r '.regions[] | select(.port_forward==true) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+  fi
 else
-  summarized_region_data="$( echo $all_region_data |
-    jq -r '.regions[] |
-    .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+  if [ "$PIA_GEO" == "true" ]
+  then
+    summarized_region_data="$( echo "$all_region_data" | jq -r '.regions[] | select(.geo==false) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+  else
+    summarized_region_data="$( echo "$all_region_data" | jq -r '.regions[] | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+  fi
 fi
-echo Testing regions that respond \
-  faster than $MAX_LATENCY seconds:
+
+echo "Testing regions that respond faster than $MAX_LATENCY s"
+
 bestRegion="$(echo "$summarized_region_data" |
   xargs -I{} bash -c 'printServerLatency {}' |
   sort | head -1 | awk '{ print $2 }')"
@@ -178,57 +190,13 @@ if [ "$PIA_PF" != true ]; then
   PIA_PF="false"
 fi
 
-if [[ $PIA_AUTOCONNECT == wireguard ]]; then
-  echo The ./get_region_and_token.sh script got started with
-  echo PIA_AUTOCONNECT=wireguard, so we will automatically connect to WireGuard,
-  echo by running this command:
-  echo $ PIA_TOKEN=\"$token\" \\
-  echo WG_SERVER_IP=$bestServer_WG_IP WG_HOSTNAME=$bestServer_WG_hostname \\
-  echo PIA_PF=$PIA_PF ./connect_to_wireguard_with_token.sh
-  echo
-  PIA_PF=$PIA_PF PIA_TOKEN="$token" WG_SERVER_IP=$bestServer_WG_IP \
-    WG_HOSTNAME=$bestServer_WG_hostname ./connect_to_wireguard_with_token.sh
-  exit 0
-fi
-
-if [[ $PIA_AUTOCONNECT == openvpn* ]]; then
-  serverIP=$bestServer_OU_IP
-  serverHostname=$bestServer_OU_hostname
-  if [[ $PIA_AUTOCONNECT == *tcp* ]]; then
-    serverIP=$bestServer_OT_IP
-    serverHostname=$bestServer_OT_hostname
-  fi
-  echo The ./get_region_and_token.sh script got started with
-  echo PIA_AUTOCONNECT=$PIA_AUTOCONNECT, so we will automatically
-  echo connect to OpenVPN, by running this command:
-  echo PIA_PF=$PIA_PF PIA_TOKEN=\"$token\" \\
-  echo   OVPN_SERVER_IP=$serverIP \\
-  echo   OVPN_HOSTNAME=$serverHostname \\
-  echo   CONNECTION_SETTINGS=$PIA_AUTOCONNECT \\
-  echo   ./connect_to_openvpn_with_token.sh
-  echo
-  PIA_PF=$PIA_PF PIA_TOKEN="$token" \
-    OVPN_SERVER_IP=$serverIP \
-    OVPN_HOSTNAME=$serverHostname \
-    CONNECTION_SETTINGS=$PIA_AUTOCONNECT \
-    ./connect_to_openvpn_with_token.sh
-  exit 0
-fi
-
-echo If you wish to automatically connect to the VPN after detecting the best
-echo region, please run the script with the env var PIA_AUTOCONNECT.
-echo 'The available options for PIA_AUTOCONNECT are (from fastest to slowest):'
-echo  - wireguard
-echo  - openvpn_udp_standard
-echo  - openvpn_udp_strong
-echo  - openvpn_tcp_standard
-echo  - openvpn_tcp_strong
-echo You can also specify the env var PIA_PF=true to get port forwarding.
+echo The ./get_region_and_token.sh script got started with
+echo PIA_AUTOCONNECT=wireguard, so we will automatically connect to WireGuard,
+echo by running this command:
+echo $ PIA_TOKEN=\"$token\" \\
+echo WG_SERVER_IP=$bestServer_WG_IP WG_HOSTNAME=$bestServer_WG_hostname \\
+echo PIA_PF=$PIA_PF ./connect_to_wireguard_with_token.sh
 echo
-echo Example:
-echo $ PIA_USER=p0123456 PIA_PASS=xxx \
-  PIA_AUTOCONNECT=wireguard PIA_PF=true ./get_region_and_token.sh
-echo
-echo You can also connect now by running this command:
-echo $ PIA_TOKEN=\"$token\" WG_SERVER_IP=$bestServer_WG_IP \
+
+PIA_PF=$PIA_PF PIA_TOKEN="$token" WG_SERVER_IP=$bestServer_WG_IP \
   WG_HOSTNAME=$bestServer_WG_hostname ./connect_to_wireguard_with_token.sh
