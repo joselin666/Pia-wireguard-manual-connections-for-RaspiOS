@@ -1,6 +1,8 @@
 #!/bin/bash
-DIRBASE="/opt/pia"
+SCRIPT=$(readlink -f $0);
+DIRBASE=`dirname $SCRIPT`;
 cd $DIRBASE
+echo "$DIRBASE"
 
 printf "
 #############################

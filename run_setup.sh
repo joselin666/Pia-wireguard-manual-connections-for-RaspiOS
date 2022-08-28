@@ -21,9 +21,10 @@
 # SOFTWARE.
 
 # Only allow script to run as root
-DIRBASE="/opt/pia"
+SCRIPT=$(readlink -f $0);
+DIRBASE=`dirname $SCRIPT`;
 cd $DIRBASE
-
+echo "$DIRBASE"
 now="$(date)"
 
 echo "
@@ -65,4 +66,36 @@ export PIA_PF
 MAX_LATENCY="${creds[6]}"
 export MAX_LATENCY
 
+echo "Waiting for internet connection"
+CONEXION=0
+while [ $CONEXION -lt 1 ]
+do
+	date
+  ping -c1 1.1.1.1
+	if [ $?  = 0 ]
+	then
+		CONEXION=1
+	fi
+
+	ping -c1 8.8.8.8
+	if [ $?  = 0 ]
+	then
+		CONEXION=1
+	fi
+
+	ping -c1 9.9.9.9
+	if [ $?  = 0 ]
+	then
+		CONEXION=1
+	fi
+
+  if [ $CONEXION -lt 1 ]
+  then
+    sleep 5
+  fi
+done
+date
+echo "
+Let's go. Internet is OK.
+"
 ./get_region_and_token.sh

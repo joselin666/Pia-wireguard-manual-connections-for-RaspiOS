@@ -1,16 +1,25 @@
 # Manual PIA Wireguard VPN Connections. RaspiOS
 
 ### This is a fork of the original Linux scripts at https://github.com/glorious1/manual-connections  
+
 Fork Notes:
+
 1. Pia Wireguard namual conecction on RaspiOS (Tested on Raspberry Pi 4 & Debian 11 64bits lite)
 2. Full configuration on config/pia_config.txt
 3. Install on /opt/pia
-4. Only Wireguard protocol are soported
+4. Only Wireguard protocol are supported
 4. New option in config/pia_config.txt in order to ignore geolocalizated Regions
-5. I recomend start `run_setup.sh` with an @reboot root cron job: `@reboot cd /opt/pia && sudo /opt/pia/run_setup.sh > /var/log/pia_startup.log 2>&1`
-6. I recomend Refresh Port every 15 minutes, in other case Pia usualy close de port. Include in root crontab job: `*/15 * * * * * cd /opt/pia && sudo /opt/pia/refresh_pia_port.sh > /var/log/pia_refresh_port.log 2>&1`
-7. Download: git clone https://github.com/joselin666/Pia-wireguard-manual-connections-for-RaspiOS.git /opt/pia
+5. I recomend start `run_setup.sh` with an @reboot root cron job: `@reboot sudo /opt/pia/run_setup.sh > /var/log/pia_startup.log 2>&1`
+6. I recomend Refresh Port every 15 minutes, in other case Pia usualy close de port. Include in root cron tab job: `*/15 * * * * * sudo /opt/pia/refresh_pia_port.sh > /var/log/pia_refresh_port.log 2>&1`
+7. Prerequisites: bash, curl, jq, wireguard and git  `sudo apt install bash curl jq wireguard git`
+8. Download:  `sudo git clone https://github.com/joselin666/Pia-wireguard-manual-connections-for-RaspiOS.git /opt/pia`
+
 End of Fork Notes
+
+
+
+
+
 
 This repository contains documentation on how to create native WireGuard and OpenVPN connections to Private Internet Access' (PIA) __NextGen network__, and also on how to enable Port Forwarding in case you require this feature. You will find a lot of information below. However if you prefer quick test, here is the __TL/DR__:
 

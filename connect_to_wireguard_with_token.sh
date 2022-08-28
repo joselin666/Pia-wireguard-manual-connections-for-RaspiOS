@@ -21,8 +21,10 @@
 
 # This script has not been completely edited to make it 
 # BSD-compatible because I don't use wireguard.
-DIRBASE="/opt/pia"
-cd $DIRBASE  
+SCRIPT=$(readlink -f $0);
+DIRBASE=`dirname $SCRIPT`;
+cd $DIRBASE
+echo "$DIRBASE"
 
 echo "
 ###########################################

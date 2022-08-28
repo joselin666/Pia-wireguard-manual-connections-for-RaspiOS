@@ -18,8 +18,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-DIRBASE="/opt/pia"
+SCRIPT=$(readlink -f $0);
+DIRBASE=`dirname $SCRIPT`;
 cd $DIRBASE
+echo "$DIRBASE"
 
 echo "
 ################################
@@ -87,8 +89,8 @@ echo "OK!"
 # Test one server from each region to get the closest region.
 # If port forwarding is enabled, filter out regions that don't support it.
 # If ignore Geo Regions is enabled, filter out Geo regions.
-echo Port Forwarding=$PIA_PF
-echo Ignore Geo Regions=$PIA_GEO
+echo Activate Port Forwarding=$PIA_PF
+echo Ignore Geolocated Regions=$PIA_GEO
 
 if [ "$PIA_PF" == "true" ]
 then
