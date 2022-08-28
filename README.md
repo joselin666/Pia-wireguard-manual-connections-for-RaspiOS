@@ -9,15 +9,16 @@ Fork Notes:
 3. Install on /opt/pia
 4. Only Wireguard protocol are supported
 4. New option in config/pia_config.txt in order to ignore geolocalizated Regions
-5. I recomend start `run_setup.sh` with an @reboot root cron job: `@reboot sudo /opt/pia/run_setup.sh > /var/log/pia_startup.log 2>&1`
-6. I recomend Refresh Port every 15 minutes, in other case Pia usualy close de port. Include in root cron tab job: `*/15 * * * * * sudo /opt/pia/refresh_pia_port.sh > /var/log/pia_refresh_port.log 2>&1`
-7. Prerequisites: bash, curl, jq, wireguard and git  `sudo apt install bash curl jq wireguard git`
-8. Download:  `sudo git clone https://github.com/joselin666/Pia-wireguard-manual-connections-for-RaspiOS.git /opt/pia`
+5. I recomend start `run_setup.sh` with an @reboot root cron job:
+	`@reboot sudo /opt/pia/run_setup.sh > /var/log/pia_startup.log 2>&1`
+6. I recomend Refresh Port every 15 minutes, in other case Pia usualy close de port. Include in root cron tab this job:
+	`*/15 * * * * sudo /opt/pia/refresh_pia_port.sh > /var/log/pia_refresh_port.log 2>&1`
+7. Prerequisites: bash, curl, jq, wireguard and git
+	`sudo apt install bash curl jq wireguard git`
+8. Download:
+	`sudo git clone https://github.com/joselin666/Pia-wireguard-manual-connections-for-RaspiOS.git /opt/pia`
 
 End of Fork Notes
-
-
-
 
 
 
