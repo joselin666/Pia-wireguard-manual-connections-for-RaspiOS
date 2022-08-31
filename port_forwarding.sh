@@ -126,8 +126,20 @@ echo "$signature" > $pf_filepath/signature
 echo "$port" > $pf_filepath/port
 echo "$expires_at" > $pf_filepath/expires_at
 
-# Final script will bind/refresh the port.  Run it with
+echo "
+*********************************
+Hotsname: $PF_HOSTNAME
+Gateway:   $PF_GATEWAY
+Port:     $port
+*********************************
+$PF_GATEWAY:$port
+*********************************
+" > $pf_filepath/Pia_data
+
+# Script will bind/refresh the port.  Run it with
 # cron every 15 minutes so PIA doesn't delete port
 # forwarding.  However it will still expire in 2 months.
-
 ./refresh_pia_port.sh
+
+# Include the port in the IPTABLES
+./activeportforward.sh
