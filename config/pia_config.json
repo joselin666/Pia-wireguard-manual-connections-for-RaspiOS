@@ -1,0 +1,9 @@
+{
+    "pia_user": "p1234567",
+    "pia_pass": "mypass",
+    "ignore_geo_regions": true,
+    "pia_dns": true,
+    "port_forward": true,
+    "to_ip_port": "192.168.1.24:80",
+    "latency": 0.10
+}
