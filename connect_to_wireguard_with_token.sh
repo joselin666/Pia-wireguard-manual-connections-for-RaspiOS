@@ -19,10 +19,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# This script has not been completely edited to make it 
+# This script has not been completely edited to make it
 # BSD-compatible because I don't use wireguard.
-SCRIPT=$(readlink -f $0);
-DIRBASE=`dirname $SCRIPT`;
+SCRIPT=$(readlink -f $0)
+DIRBASE=$(dirname $SCRIPT)
 cd $DIRBASE
 echo "$DIRBASE"
 
@@ -36,8 +36,7 @@ echo "
 function check_tool() {
   cmd=$1
   package=$2
-  if ! command -v $cmd &>/dev/null
-  then
+  if ! command -v $cmd &>/dev/null; then
     echo "$cmd could not be found"
     echo "Please install $package"
     exit 1
@@ -52,19 +51,18 @@ check_tool jq jq
 # connection does not leak, it is best to disabled IPv6 altogether.
 
 if [ $(sysctl -n net.ipv6.conf.all.disable_ipv6) -ne 1 ] ||
-  [ $(sysctl -n net.ipv6.conf.default.disable_ipv6) -ne 1 ]
-then
-  echo 'You should consider disabling IPv6 by running:'
-  echo 'sysctl -w net.ipv6.conf.all.disable_ipv6=1'
-  echo 'sysctl -w net.ipv6.conf.default.disable_ipv6=1'
+  [ $(sysctl -n net.ipv6.conf.default.disable_ipv6) -ne 1 ]; then
+  echo "Disabling ipv6"
+  sysctl -w net.ipv6.conf.all.disable_ipv6=1
+  sysctl -w net.ipv6.conf.default.disable_ipv6=1
 fi
 
 # Check if the mandatory environment variables are set.
 if [[ ! $WG_SERVER_IP || ! $WG_HOSTNAME || ! $PIA_TOKEN ]]; then
   echo This script requires 3 env vars:
   echo WG_SERVER_IP - IP that you want to connect to
-  echo WG_HOSTNAME  - name of the server, required for ssl
-  echo PIA_TOKEN    - your authentication token
+  echo WG_HOSTNAME - name of the server, required for ssl
+  echo PIA_TOKEN - your authentication token
   echo
   echo You can also specify optional env vars:
   echo "PIA_PF                - enable port forwarding"
@@ -75,7 +73,7 @@ fi
 # Create ephemeral wireguard keys, that we don't need to save to disk.
 privKey="$(wg genkey)"
 export privKey
-pubKey="$( echo "$privKey" | wg pubkey)"
+pubKey="$(echo "$privKey" | wg pubkey)"
 export pubKey
 
 # Authenticate via the PIA WireGuard RESTful API.
@@ -90,13 +88,13 @@ wireguard_json="$(curl -s -G \
   --cacert "ca.rsa.4096.crt" \
   --data-urlencode "pt=${PIA_TOKEN}" \
   --data-urlencode "pubkey=$pubKey" \
-  "https://${WG_HOSTNAME}:1337/addKey" )"
+  "https://${WG_HOSTNAME}:1337/addKey")"
 export wireguard_json
 echo "$wireguard_json"
 
 # Check if the API returned OK and stop this script if it didn't.
 if [ "$(echo "$wireguard_json" | jq -r '.status')" != "OK" ]; then
-  >&2 echo "Server did not return OK. Stopping now."
+  echo >&2 "Server did not return OK. Stopping now."
   exit 1
 fi
 
@@ -133,7 +131,7 @@ PersistentKeepalive = 25
 PublicKey = $(echo "$wireguard_json" | jq -r '.server_key')
 AllowedIPs = 0.0.0.0/0
 Endpoint = ${WG_SERVER_IP}:$(echo "$wireguard_json" | jq -r '.server_port')
-" > /etc/wireguard/pia.conf || exit 1
+" >/etc/wireguard/pia.conf || exit 1
 echo OK!
 
 # Start the WireGuard interface.
@@ -179,8 +177,8 @@ echo
 
 PIA_TOKEN=$PIA_TOKEN \
   PF_GATEWAY="$(echo "$wireguard_json" | jq -r '.server_ip')" \
-export PF_GATEWAY
-  PF_HOSTNAME="$WG_HOSTNAME" \
-export PF_HOSTNAME
+  export PF_GATEWAY
+PF_HOSTNAME="$WG_HOSTNAME" \
+  export PF_HOSTNAME
 
-  ./port_forwarding.sh
+./port_forwarding.sh

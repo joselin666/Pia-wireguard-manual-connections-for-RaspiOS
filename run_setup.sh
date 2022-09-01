@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 # Only allow script to run as root
-SCRIPT=$(readlink -f $0);
-DIRBASE=`dirname $SCRIPT`;
+SCRIPT=$(readlink -f $0)
+DIRBASE=$(dirname $SCRIPT)
 cd $DIRBASE
 echo "$DIRBASE"
 now="$(date)"
@@ -36,8 +36,8 @@ Starting script at $now
 "
 
 if [ "$(whoami)" != "root" ]; then
-  echo "This script needs to be run as root. Try again with 'sudo $0'"
-  exit 1
+	echo "This script needs to be run as root. Try again with 'sudo $0'"
+	exit 1
 fi
 
 # Hardcoding all the settings to make testing (and using!) easier
@@ -80,28 +80,24 @@ echo "latency: $MAX_LATENCY"
 
 echo "Waiting for internet connection"
 CONEXION=0
-while [ $CONEXION -lt 1 ]
-do
+while [ $CONEXION -lt 1 ]; do
 	date
-	ping -c1 1.1.1.1 > /dev/null
-	if [ $?  = 0 ]
-	then
+	ping -c1 1.1.1.1 >/dev/null
+	if [ $? = 0 ]; then
 		CONEXION=1
 	else
 		sleep 5
 	fi
 
-	ping -c1 8.8.8.8 > /dev/null
-	if [ $?  = 0 ]
-	then
+	ping -c1 8.8.8.8 >/dev/null
+	if [ $? = 0 ]; then
 		CONEXION=1
 	else
 		sleep 5
 	fi
 
-	ping -c1 9.9.9.9 > /dev/null
-	if [ $?  = 0 ]
-	then
+	ping -c1 9.9.9.9 >/dev/null
+	if [ $? = 0 ]; then
 		CONEXION=1
 	else
 		sleep 5

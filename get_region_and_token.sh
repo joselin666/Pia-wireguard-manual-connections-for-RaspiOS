@@ -18,8 +18,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-SCRIPT=$(readlink -f $0);
-DIRBASE=`dirname $SCRIPT`;
+SCRIPT=$(readlink -f $0)
+DIRBASE=$(dirname $SCRIPT)
 cd $DIRBASE
 echo "$DIRBASE"
 
@@ -33,8 +33,7 @@ echo "
 function check_tool() {
   cmd=$1
   package=$2
-  if ! command -v $cmd &>/dev/null
-  then
+  if ! command -v $cmd &>/dev/null; then
     echo "$cmd could not be found"
     echo "Please install $package"
     exit 1
@@ -66,7 +65,7 @@ printServerLatency() {
     --write-out "%{time_connect}" \
     http://$serverIP:443)
   if [ $? -eq 0 ]; then
-    >&2 echo Got latency ${time}s for region: $regionName
+    echo >&2 Got latency ${time}s for region: $regionName
     echo $time $regionID $serverIP
   fi
 }
@@ -92,20 +91,17 @@ echo "OK!"
 echo Activate Port Forwarding=$PIA_PF
 echo Ignore Geolocated Regions=$PIA_GEO
 
-if [ "$PIA_PF" == "true" ]
-then
-  if [ "$PIA_GEO" == "true" ]
-  then
-    summarized_region_data="$( echo "$all_region_data" | jq -r '.regions[] | select(.port_forward==true) | select(.geo==false) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+if [ "$PIA_PF" == "true" ]; then
+  if [ "$PIA_GEO" == "true" ]; then
+    summarized_region_data="$(echo "$all_region_data" | jq -r '.regions[] | select(.port_forward==true) | select(.geo==false) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)')"
   else
-    summarized_region_data="$( echo "$all_region_data" | jq -r '.regions[] | select(.port_forward==true) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+    summarized_region_data="$(echo "$all_region_data" | jq -r '.regions[] | select(.port_forward==true) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)')"
   fi
 else
-  if [ "$PIA_GEO" == "true" ]
-  then
-    summarized_region_data="$( echo "$all_region_data" | jq -r '.regions[] | select(.geo==false) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+  if [ "$PIA_GEO" == "true" ]; then
+    summarized_region_data="$(echo "$all_region_data" | jq -r '.regions[] | select(.geo==false) | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)')"
   else
-    summarized_region_data="$( echo "$all_region_data" | jq -r '.regions[] | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)' )"
+    summarized_region_data="$(echo "$all_region_data" | jq -r '.regions[] | .servers.meta[0].ip+" "+.id+" "+.name+" "+(.geo|tostring)')"
   fi
 fi
 
@@ -124,12 +120,12 @@ if [ -z "$bestRegion" ]; then
 fi
 
 # Get all data for the best region
-regionData="$( echo $all_region_data |
+regionData="$(echo $all_region_data |
   jq --arg REGION_ID "$bestRegion" -r \
-  '.regions[] | select(.id==$REGION_ID)')"
+    '.regions[] | select(.id==$REGION_ID)')"
 
 echo -n The closest region is "$(echo $regionData | jq -r '.name')"
-if echo $regionData | jq -r '.geo' | grep true > /dev/null; then
+if echo $regionData | jq -r '.geo' | grep true >/dev/null; then
   echo " (geolocated region)."
 else
   echo "."

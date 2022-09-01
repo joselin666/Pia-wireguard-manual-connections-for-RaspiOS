@@ -1,6 +1,6 @@
 #!/bin/bash
-SCRIPT=$(readlink -f $0);
-DIRBASE=`dirname $SCRIPT`;
+SCRIPT=$(readlink -f $0)
+DIRBASE=$(dirname $SCRIPT)
 cd $DIRBASE
 echo "$DIRBASE"
 
@@ -11,12 +11,12 @@ printf "
 
 # Retrieve variables
 pf_filepath=$DIRBASE/pf
-PF_HOSTNAME="$( cat $pf_filepath/PF_HOSTNAME )"
-PF_GATEWAY="$( cat $pf_filepath/PF_GATEWAY )"
-payload="$( cat $pf_filepath/payload )"
-signature="$( cat $pf_filepath/signature )"
-port="$( cat $pf_filepath/port )"
-expires_at="$( cat $pf_filepath/expires_at )"
+PF_HOSTNAME="$(cat $pf_filepath/PF_HOSTNAME)"
+PF_GATEWAY="$(cat $pf_filepath/PF_GATEWAY)"
+payload="$(cat $pf_filepath/payload)"
+signature="$(cat $pf_filepath/signature)"
+port="$(cat $pf_filepath/port)"
+expires_at="$(cat $pf_filepath/expires_at)"
 
 echo PF_HOSTNAME: $PF_HOSTNAME
 echo PF_GATEWAY: $PF_GATEWAY

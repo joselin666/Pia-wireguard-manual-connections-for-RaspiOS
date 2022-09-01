@@ -18,8 +18,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-SCRIPT=$(readlink -f $0);
-DIRBASE=`dirname $SCRIPT`;
+SCRIPT=$(readlink -f $0)
+DIRBASE=$(dirname $SCRIPT)
 cd $DIRBASE
 echo "$DIRBASE"
 
@@ -33,8 +33,7 @@ echo "
 function check_tool() {
   cmd=$1
   package=$2
-  if ! command -v $cmd &>/dev/null
-  then
+  if ! command -v $cmd &>/dev/null; then
     echo "$cmd could not be found"
     echo "Please run 'pkg install $package'"
     exit 1
@@ -50,10 +49,10 @@ echo "PIA_TOKEN $PIA_TOKEN"
 # Check if the mandatory environment variables are set.
 if [[ ! $PF_GATEWAY || ! $PIA_TOKEN || ! $PF_HOSTNAME ]]; then
   echo This script requires 3 env vars:
-  echo PF_GATEWAY  - the IP of your gateway
+  echo PF_GATEWAY - the IP of your gateway
   echo PF_HOSTNAME - name of the host used for SSL/TLS certificate verification
-  echo PIA_TOKEN   - the token you use to connect to the vpn services
-exit 1
+  echo PIA_TOKEN - the token you use to connect to the vpn services
+  exit 1
 fi
 
 # The port forwarding system has required two variables:
@@ -119,12 +118,12 @@ echo "The signature is OK.
 
 # Save variables to files so refresh script can get them
 pf_filepath=$DIRBASE/pf
-echo "$PF_HOSTNAME" > $pf_filepath/PF_HOSTNAME
-echo "$PF_GATEWAY" > $pf_filepath/PF_GATEWAY
-echo "$payload" > $pf_filepath/payload
-echo "$signature" > $pf_filepath/signature
-echo "$port" > $pf_filepath/port
-echo "$expires_at" > $pf_filepath/expires_at
+echo "$PF_HOSTNAME" >$pf_filepath/PF_HOSTNAME
+echo "$PF_GATEWAY" >$pf_filepath/PF_GATEWAY
+echo "$payload" >$pf_filepath/payload
+echo "$signature" >$pf_filepath/signature
+echo "$port" >$pf_filepath/port
+echo "$expires_at" >$pf_filepath/expires_at
 
 echo "
 *********************************
@@ -134,7 +133,7 @@ Port:     $port
 *********************************
 $PF_GATEWAY:$port
 *********************************
-" > $pf_filepath/Pia_data
+" >$pf_filepath/Pia_data
 
 # Script will bind/refresh the port.  Run it with
 # cron every 15 minutes so PIA doesn't delete port
