@@ -51,9 +51,6 @@ check_tool jq jq
 # PIA currently does not support IPv6. In order to be sure your VPN
 # connection does not leak, it is best to disabled IPv6 altogether.
 
-<< 'MULTILINE-COMMENT'
-( This doesn't work on FreeBSD. IPv6 is instead disabled in 
-  openvpn_config/standard.ovpn and strong.ovpn )
 if [ $(sysctl -n net.ipv6.conf.all.disable_ipv6) -ne 1 ] ||
   [ $(sysctl -n net.ipv6.conf.default.disable_ipv6) -ne 1 ]
 then
@@ -61,7 +58,6 @@ then
   echo 'sysctl -w net.ipv6.conf.all.disable_ipv6=1'
   echo 'sysctl -w net.ipv6.conf.default.disable_ipv6=1'
 fi
-MULTILINE-COMMENT
 
 # Check if the mandatory environment variables are set.
 if [[ ! $WG_SERVER_IP || ! $WG_HOSTNAME || ! $PIA_TOKEN ]]; then
